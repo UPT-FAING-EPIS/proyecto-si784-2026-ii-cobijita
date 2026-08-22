@@ -5,6 +5,18 @@ Integrantes: Patrick Rodriguez Cardenas (2022075751) · Nicole Rios Cohaila (202
 
 ---
 
+## Aplicación
+
+La herramienta está implementada y es ejecutable: **`app/index.html`** (doble clic,
+sin instalación ni compilación). 64 pruebas en verde con `node app/tests/casos.js`.
+
+- Manual de uso, catálogo de reglas y estructura: [`app/README.md`](app/README.md)
+- Plan de pruebas, casos y métricas de calidad: [`calidad/Plan-de-Pruebas.md`](calidad/Plan-de-Pruebas.md)
+- Informes del proyecto: `FD01-EPIS-Informe de Factibilidad-DespliegaUML.docx` ·
+  `FD02-EPIS-Informe Vision-DespliegaUML.docx`
+
+---
+
 ## 1. Título
 DespliegaUML: herramienta para modelar diagramas de componentes y de
 despliegue de software, validar su consistencia mediante reglas y
@@ -45,7 +57,7 @@ autor se percate hasta la etapa de implementación.
   > Medible: el plan generado cubre todos los nodos y artifacts del
     modelo sin referencias pendientes.
 
-## 4. Objetivos de solución (alcance del equipo)
+## 4. Objetivos de solución (medibles, alcance del equipo)
 - OS1: Implementar un editor de diagramas de componentes y de despliegue
   que permita definir elementos y relaciones.
   > Medible: se puede crear, editar y eliminar cada tipo de elemento
