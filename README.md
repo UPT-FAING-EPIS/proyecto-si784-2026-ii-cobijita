@@ -3,13 +3,11 @@
 
 Integrantes: Patrick Rodriguez Cardenas (2022075751) · Nicole Rios Cohaila (2022075745)
 
----
-
 ## 1. Título
 Traza tu Suerte: sistema de asignación imparcial de cupos y resultados
 con auditoría criptográfica verificable mediante cadena de hash.
 
-## 2. Problema detallado (con fuentes)
+## 2. Problema detallado
 Las rifas, sorteos y asignación de cupos (becas, stands, beneficencia)
 en instituciones y eventos de Tacna se ejecutan habitualmente de forma
 opaca: el resultado se comunica sin evidencia que permita a los
@@ -42,7 +40,7 @@ participantes verificar que no fue manipulado ni predeterminado.
   > Medible: prueba sobre al menos 1000 ejecuciones sin sesgo
     detectable en la distribución de resultados.
 
-## 4. Objetivos de solución (medibles, alcance del equipo)
+## 4. Objetivos de solución (alcance del equipo)
 - OS1: Implementar un módulo de sellado hash-chain que registre
   semilla, timestamp y hash del registro anterior.
   > Medible: 100% de asignaciones selladas y verificables.
