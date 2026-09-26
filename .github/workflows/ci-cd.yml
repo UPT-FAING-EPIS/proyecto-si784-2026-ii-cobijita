@@ -70,6 +70,13 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Instalar Graphviz
+        run: |
+          # PlantUML delega el trazado a Graphviz; sin él no produce SVG.
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq graphviz
+          dot -V
+
       - name: Instalar PlantUML
         run: |
           # Versión fijada: la del apt en ubuntu-latest es anterior y rechaza
@@ -90,7 +97,9 @@ jobs:
           # (no con el del archivo), así que se renombra al final.
           java -jar plantuml.jar -tsvg -o doc doc/diagrama-componentes.puml doc/diagrama-despliegue.puml
           for sv in doc/*.svg; do
-            case "$(basename "$sv")" in
+            base=$(basename "$sv")
+            case "$base" in
+              diagrama-componentes.svg|diagrama-despliegue.svg) : ;;
               *componentes*) mv -f "$sv" doc/diagrama-componentes.svg ;;
               *despliegue*)  mv -f "$sv" doc/diagrama-despliegue.svg ;;
             esac
@@ -134,17 +143,68 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site
-          # la aplicación se publica en la raíz
-          cp -r app _site/app
-          # la documentación en /doc
-          cp -r doc _site/doc
-          # los informes del proyecto
+          # La aplicación se publica en la raíz del sitio: sus rutas relativas
+          # (css/, src/) son absolutas respecto a index.html, de modo que
+          # copiar su contenido —no el archivo suelto— mantiene la carga.
+          cp -r app/. _site/
+          # además se conserva con su carpeta de pruebas y ejemplos
+          mkdir -p _site/app
+          cp -r app/. _site/app/
+          # La documentación en /doc
+          mkdir -p _site/doc
+          cp -f doc/*.md doc/*.svg doc/*.puml _site/doc/ 2>/dev/null || true
+          # Los informes del proyecto
           mkdir -p _site/informes
-          cp -v FD*.docx _site/informes/ 2>/dev/null || true
-          cp -v unidad1/Proyecto-de-Unidad-1.pdf _site/informes/ 2>/dev/null || true
-          # página de entrada
-          cp _site/app/index.html _site/index.html
-          find _site -maxdepth 2 -type d | sort
+          cp -f FD*.docx _site/informes/ 2>/dev/null || true
+          cp -f unidad1/Proyecto-de-Unidad-1.pdf _site/informes/ 2>/dev/null || true
+          # La portada se guarda aparte y luego sustituye al index de la app,
+          # que queda accesible como index-app.html.
+          mv _site/index.html _site/index-app.html
+          cat > _site/index.html <<'HTML'
+          <!DOCTYPE html>
+          <html lang="es"><head><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>DespliegaUML</title>
+          <style>
+            body{font-family:"Segoe UI",system-ui,sans-serif;background:#f1f5f9;color:#0f172a;margin:0;padding:32px}
+            main{max-width:760px;margin:0 auto}
+            h1{color:#0f766e;margin:0 0 4px}
+            .sub{color:#64748b;margin:0 0 28px}
+            a.b{display:inline-block;background:#0f766e;color:#fff;text-decoration:none;
+               padding:12px 20px;border-radius:8px;margin:6px 8px 6px 0;font-weight:600}
+            a.b.sec{background:#fff;color:#0f766e;border:1px solid #cbd5e1}
+            a.b:hover{background:#115e59}
+            h2{margin-top:32px;font-size:16px;color:#0f766e}
+            ul{line-height:1.9}
+          </style></head><body><main>
+          <h1>▲ DespliegaUML</h1>
+          <p class="sub">Diagramador de componentes y despliegue de software con
+          validación de reglas y plan de despliegue</p>
+          <a class="b" href="index-app.html">Abrir la aplicación</a>
+          <a class="b sec" href="app/index.html">Abrir en su carpeta</a>
+          <a class="b sec" href="doc/manual-tecnico.md">Manual técnico</a>
+          <a class="b sec" href="doc/plan-despliegue.md">Plan de despliegue</a>
+          <h2>Documentación</h2>
+          <ul>
+            <li><a href="doc/catalogo-reglas.md">Catálogo de reglas de consistencia</a></li>
+            <li><a href="doc/informe-calidad.md">Informe de calidad</a></li>
+            <li><a href="doc/diagrama-componentes.svg">Diagrama de componentes</a></li>
+            <li><a href="doc/diagrama-despliegue.svg">Diagrama de despliegue</a></li>
+            <li><a href="app/README.md">Manual de uso de la aplicación</a></li>
+            <li>Informes del proyecto (FD01 a FD04) en el repositorio</li>
+          </ul>
+          </main></body></html>
+          HTML
+          find _site -maxdepth 1 | sort
+          echo "--- comprobación de la estructura publicada ---"
+          test -f _site/index.html             || { echo "::error::falta la portada"; exit 1; }
+          test -f _site/index-app.html         || { echo "::error::falta la aplicación"; exit 1; }
+          test -f _site/css/estilos.css        || { echo "::error::falta el CSS"; exit 1; }
+          test -f _site/src/modelo.js          || { echo "::error::falta el código"; exit 1; }
+          test -f _site/doc/manual-tecnico.md  || { echo "::error::falta la documentación"; exit 1; }
+          test -s _site/doc/diagrama-componentes.svg || { echo "::error::falta el diagrama de componentes"; exit 1; }
+          test -s _site/doc/diagrama-despliegue.svg  || { echo "::error::falta el diagrama de despliegue"; exit 1; }
+          echo "estructura de publicación correcta"
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5

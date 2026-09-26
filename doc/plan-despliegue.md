@@ -1,6 +1,6 @@
 # Plan de despliegue — Aplicación web tres niveles
 
-- **Modelo**: v1.0 · generado 2026-09-26T21:54:03.272Z
+- **Modelo**: v1.0 · generado 2026-09-26T21:59:53.242Z
 - **Estado**: LISTO PARA DESPLIEGUE
 - **Validación previa**: 0 errores, 0 advertencias, 0 avisos
 - **Alcance**: 2 nodos · 3 componentes · 3 artefactos · 2 conectores · 1 caminos

@@ -35,3 +35,4 @@ node_modules/
 # PlantUML: los SVG se versionan en doc/, el jar no
 plantuml.jar
 *.jar
+_site/
