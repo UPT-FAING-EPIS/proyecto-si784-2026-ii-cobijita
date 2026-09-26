@@ -72,18 +72,32 @@ jobs:
 
       - name: Instalar PlantUML
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq plantuml graphviz
-          plantuml -version | head -1
+          # Versión fijada: la del apt en ubuntu-latest es anterior y rechaza
+          # la sintaxis de puertos que usa el generador. Un jar con la misma
+          # versión que se verificó en local elimina esa diferencia.
+          PLANTUML_VERSION=1.2024.7
+          curl -sSL -o plantuml.jar \
+            "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
+          java -jar plantuml.jar -version | head -2
 
       - name: Generar la documentación técnica
         run: node tools/generar-documentacion.js
 
       - name: Renderizar los diagramas a SVG
         run: |
-          plantuml -tsvg -o diagrama-componentes doc/diagrama-componentes.puml
-          plantuml -tsvg -o diagrama-despliegue doc/diagrama-despliegue.puml
+          # -o doc/ deja el SVG junto al .puml; -tsvg fuerza el formato.
+          # PlantUML nombra la salida con el nombre declarado en @startuml
+          # (no con el del archivo), así que se renombra al final.
+          java -jar plantuml.jar -tsvg -o doc doc/diagrama-componentes.puml doc/diagrama-despliegue.puml
+          for sv in doc/*.svg; do
+            case "$(basename "$sv")" in
+              *componentes*) mv -f "$sv" doc/diagrama-componentes.svg ;;
+              *despliegue*)  mv -f "$sv" doc/diagrama-despliegue.svg ;;
+            esac
+          done
           ls -la doc/*.svg
+          test -s doc/diagrama-componentes.svg || { echo "::error::no se generó el diagrama de componentes"; exit 1; }
+          test -s doc/diagrama-despliegue.svg || { echo "::error::no se generó el diagrama de despliegue"; exit 1; }
 
       - name: Adjuntar los artefactos generados
         uses: actions/upload-artifact@v4
