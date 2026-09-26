@@ -58,6 +58,13 @@ Los artefactos generados se pueden regenerar en local con:
 node tools/generar-documentacion.js
 ```
 
+> **Pendiente de una acción manual:** el entorno `github-pages` de la
+> organización tiene una política de ramas personalizadas que no incluye `main`,
+> por lo que el despliegue se queda en cola y la URL devuelve 404. Basta con
+> **Settings → Environments → github-pages → Deployment branches → All branches**
+> con una cuenta administradora de `UPT-FAING-EPIS`. El procedimiento completo
+> está en [`doc/Despliegue.md`](doc/Despliegue.md).
+
 ---
 
 ## 1. Título

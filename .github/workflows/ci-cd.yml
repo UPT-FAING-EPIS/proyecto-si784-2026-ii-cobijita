@@ -215,6 +215,26 @@ jobs:
         with:
           path: _site
 
+      - name: Comprobar la publicación
+        run: |
+          url="${{ steps.deploy.outputs.page_url }}"
+          echo "URL de publicación: $url"
+          # Pages puede tardar unos segundos en servir el primer despliegue.
+          for i in $(seq 1 10); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -L "$url" || echo 000)
+            echo "intento $i: HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "::notice::Sitio publicado correctamente en $url"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::warning::El artefacto se publicó, pero $url aún no responde 200."
+          echo "::warning::Si el entorno github-pages tiene una regla de ramas que no"
+          echo "::warning::incluye main, el despliegue queda en cola. Revisa"
+          echo "::warning::Settings → Environments → github-pages → Deployment branches"
+          echo "::warning::y añade main, o cambia la política a 'Selected branches'."
+
   resumen:
     name: Resumen
     needs: [pruebas, documentacion]

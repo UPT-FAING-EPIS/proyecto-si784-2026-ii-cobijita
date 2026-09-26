@@ -12,7 +12,7 @@
 | Avisos | 0 |
 | Reglas evaluadas | 19 |
 | Modelo válido | sí |
-| Duración de la validación | 3.468 ms |
+| Duración de la validación | 6.733 ms |
 
 ## 2. Suite de pruebas automatizadas
 
@@ -22,7 +22,7 @@
 | Casos exitosos | 64 |
 | Casos fallidos | 0 |
 | Tasa de éxito | 100.0 % |
-| Tiempo de ejecución | 24 ms |
+| Tiempo de ejecución | 32 ms |
 
 ## 3. Hallazgos del modelo de referencia
 

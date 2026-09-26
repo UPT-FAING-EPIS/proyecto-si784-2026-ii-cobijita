@@ -110,8 +110,8 @@ entregables concretos del proyecto.
 | :- | :- | :- |
 | 1 | Título, problema con fuentes, objetivos medibles | **Entregado** — este documento |
 | 2 | FD01 Informe de Factibilidad · FD02 Informe de Visión | **Entregado** — `proyecto-si784-2026-ii-cobijita/FD01-…docx` y `FD02-…docx` |
-| 3 | FD03 Informe SRS · FD04 Informe SAD | Pendiente — plantillas ya disponibles en el repo |
-| 4, 5, 6 | Aplicación desplegada en nube o servicio público, con automatizaciones que generen diagramas y manuales técnicos desde el repositorio git | **Aplicación terminada y en el repositorio**; falta el despliegue en la nube y la automatización de CI |
+| 3 | FD03 Informe SRS · FD04 Informe SAD | **Entregado** — `FD03-EPIS-Informe SRS-DespliegaUML.docx` y `FD04-EPIS-Informe SAD-DespliegaUML.docx` |
+| 4, 5, 6 | Aplicación desplegada en nube o servicio público, con automatizaciones que generen diagramas y manuales técnicos desde el repositorio git | **Aplicación y CI/CD entregados.** El pipeline corre, genera los diagramas y el manual técnico, y publica en GitHub Pages. **Falta un clic de un administrador de la organización** para activar la rama `main` en el entorno de Pages (ver `doc/Despliegue.md`) |
 
 ## Repositorio
 
