@@ -216,12 +216,19 @@ jobs:
           path: _site
 
       - name: Comprobar la publicación
+        env:
+          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
         run: |
-          url="${{ steps.deploy.outputs.page_url }}"
+          # upload-pages-artifact no expone page_url; la URL se deriva del
+          # repositorio si el valor viene vacío.
+          url="$PAGE_URL"
+          if [ -z "$url" ] || [ "$url" = "" ]; then
+            url="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/"
+          fi
           echo "URL de publicación: $url"
           # Pages puede tardar unos segundos en servir el primer despliegue.
           for i in $(seq 1 10); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' -L "$url" || echo 000)
+            code=$(curl -s -o /dev/null -w '%{http_code}' -L "$url" 2>/dev/null || echo 000)
             echo "intento $i: HTTP $code"
             if [ "$code" = "200" ]; then
               echo "::notice::Sitio publicado correctamente en $url"
@@ -229,11 +236,12 @@ jobs:
             fi
             sleep 10
           done
-          echo "::warning::El artefacto se publicó, pero $url aún no responde 200."
-          echo "::warning::Si el entorno github-pages tiene una regla de ramas que no"
-          echo "::warning::incluye main, el despliegue queda en cola. Revisa"
-          echo "::warning::Settings → Environments → github-pages → Deployment branches"
-          echo "::warning::y añade main, o cambia la política a 'Selected branches'."
+          {
+            echo "::warning::El artefacto se publicó, pero $url aún no responde 200."
+            echo "::warning::Si el entorno github-pages tiene una regla de ramas que no incluye main, el despliegue queda en cola."
+            echo "::warning::Revisa Settings → Environments → github-pages → Deployment branches y añade main, o cambia la política a All branches."
+            echo "::warning::El procedimiento completo está en doc/Despliegue.md"
+          }
 
   resumen:
     name: Resumen
