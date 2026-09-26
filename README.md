@@ -57,7 +57,7 @@ autor se percate hasta la etapa de implementación.
   > Medible: el plan generado cubre todos los nodos y artifacts del
     modelo sin referencias pendientes.
 
-## 4. Objetivos de solución (medibles, alcance del equipo)
+## 4. Objetivos de solución (alcance del equipo)
 - OS1: Implementar un editor de diagramas de componentes y de despliegue
   que permita definir elementos y relaciones.
   > Medible: se puede crear, editar y eliminar cada tipo de elemento

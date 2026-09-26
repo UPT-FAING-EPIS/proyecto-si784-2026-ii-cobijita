@@ -1,0 +1,30 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Descompresiones de .docx usadas para reconstruir los informes
+unpack_fd01/
+_fix_sys/
+
+# Scripts de un solo uso que generaron los .docx (no son parte del producto)
+/build_fd0*.py
+/fill_fd0*.py
+/apply_*.py
+/finalize_fd01.py
+/find_fd01.py
+/fix_fd01.py
+/fix_sistema_fd01.py
+/markers_fd02.py
+/struct_fd02.py
+/study_style*.py
+/dump_fd02.py
+/check_fd01.py
+/contenido.py
+/fd0*_improve.py
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+*.swp
+*~
