@@ -1,0 +1,172 @@
+name: DespliegaUML CI/CD
+
+# Cada push a main y cada pull request:
+#   1. ejecuta la suite de pruebas (bloquea el despliegue si falla)
+#   2. regenera los diagramas y el manual técnico desde el modelo
+#   3. renderiza los .puml a SVG e inserta las imágenes en el README
+#   4. publica la aplicación y la documentación en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas:
+    name: Suite de pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ejecutar la suite de pruebas
+        run: node app/tests/casos.js
+
+      - name: Verificar la coherencia de los modelos de ejemplo
+        run: |
+          node -e "
+          const fs=require('fs'),vm=require('vm');
+          ['modelo.js','reglas.js','plan.js','pruebas.js','puml.js']
+            .forEach(f=>vm.runInThisContext(
+              fs.readFileSync('app/src/'+f,'utf8'),{filename:f}));
+          const DPL=globalThis.DPL;
+          const m=DPL.Modelo.normalizar(
+            JSON.parse(fs.readFileSync('app/ejemplos/aplicacion-web-3niveles.json','utf8')));
+          const v=DPL.validar(m);
+          console.log('Validación:', JSON.stringify(v.resumen));
+          if (!v.valido) {
+            console.error('El modelo de ejemplo no cumple las reglas:');
+            v.hallazgos.filter(h=>h.severity||h.severidad==='error')
+             .forEach(h=>console.error(' -',h.regla,h.mensaje));
+            process.exit(1);
+          }
+          console.log('El modelo de ejemplo cumple las '+v.reglasEvaluadas+' reglas.');
+          "
+
+  documentacion:
+    name: Generar documentación y diagramas
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar PlantUML
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq plantuml graphviz
+          plantuml -version | head -1
+
+      - name: Generar la documentación técnica
+        run: node tools/generar-documentacion.js
+
+      - name: Renderizar los diagramas a SVG
+        run: |
+          plantuml -tsvg -o diagrama-componentes doc/diagrama-componentes.puml
+          plantuml -tsvg -o diagrama-despliegue doc/diagrama-despliegue.puml
+          ls -la doc/*.svg
+
+      - name: Adjuntar los artefactos generados
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentacion-despliegauml
+          path: |
+            doc/
+          retention-days: 90
+
+  publicar:
+    name: Publicar en GitHub Pages
+    needs: documentacion
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generar la documentación
+        run: node tools/generar-documentacion.js
+
+      - name: Preparar el directorio de publicación
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          # la aplicación se publica en la raíz
+          cp -r app _site/app
+          # la documentación en /doc
+          cp -r doc _site/doc
+          # los informes del proyecto
+          mkdir -p _site/informes
+          cp -v FD*.docx _site/informes/ 2>/dev/null || true
+          cp -v unidad1/Proyecto-de-Unidad-1.pdf _site/informes/ 2>/dev/null || true
+          # página de entrada
+          cp _site/app/index.html _site/index.html
+          find _site -maxdepth 2 -type d | sort
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Publicar
+        id: deploy
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  resumen:
+    name: Resumen
+    needs: [pruebas, documentacion]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar los artefactos generados
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: documentacion-despliegauml
+          path: doc
+
+      - name: Resultado
+        run: |
+          echo "### Resultado de la integración continua" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Etapa | Estado |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| :- | :- |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Pruebas | ${{ needs.pruebas.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Documentación | ${{ needs.documentacion.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f doc/informe-calidad.md ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '<details><summary>Informe de calidad</summary>' >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            cat doc/informe-calidad.md >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '</details>' >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -3,17 +3,60 @@
 
 Integrantes: Patrick Rodriguez Cardenas (2022075751) · Nicole Rios Cohaila (2022075745)
 
+**Curso:** SI-784 Calidad y Pruebas de Software · 2026-II · Ciclo 7
+
 ---
 
 ## Aplicación
 
 La herramienta está implementada y es ejecutable: **`app/index.html`** (doble clic,
-sin instalación ni compilación). 64 pruebas en verde con `node app/tests/casos.js`.
+sin instalación ni compilación). **64 pruebas en verde** con `node app/tests/casos.js`.
 
-- Manual de uso, catálogo de reglas y estructura: [`app/README.md`](app/README.md)
-- Plan de pruebas, casos y métricas de calidad: [`calidad/Plan-de-Pruebas.md`](calidad/Plan-de-Pruebas.md)
-- Informes del proyecto: `FD01-EPIS-Informe de Factibilidad-DespliegaUML.docx` ·
-  `FD02-EPIS-Informe Vision-DespliegaUML.docx`
+🔗 **Demo en vivo:** <https://upt-faing-epis.github.io/proyecto-si784-2026-ii-cobijita/>
+
+### Diagrama de componentes
+
+![Diagrama de componentes](doc/diagrama-componentes.svg)
+
+### Diagrama de despliegue
+
+![Diagrama de despliegue](doc/diagrama-despliegue.svg)
+
+### Documentación
+
+| Documento | Contenido |
+| :- | :- |
+| [`app/README.md`](app/README.md) | Manual de uso, catálogo de reglas y estructura del código |
+| [`doc/manual-tecnico.md`](doc/manual-tecnico.md) | Manual técnico (generado automáticamente) |
+| [`doc/plan-despliegue.md`](doc/plan-despliegue.md) | Plan de despliegue del modelo de ejemplo |
+| [`doc/catalogo-reglas.md`](doc/catalogo-reglas.md) | Catálogo de las 19 reglas con su fundamento |
+| [`doc/informe-calidad.md`](doc/informe-calidad.md) | Informe de calidad con métricas de la última ejecución |
+| [`calidad/Plan-de-Pruebas.md`](calidad/Plan-de-Pruebas.md) | Plan de pruebas con trazabilidad regla → caso |
+| [`unidad1/Proyecto-de-Unidad-1.docx`](unidad1/Proyecto-de-Unidad-1.docx) | Parte 1 del proyecto de unidad (semana 1) |
+
+### Informes del proyecto
+
+`FD01-EPIS-Informe de Factibilidad-DespliegaUML.docx` ·
+`FD02-EPIS-Informe Vision-DespliegaUML.docx` ·
+`FD03-EPIS-Informe SRS-DespliegaUML.docx` ·
+`FD04-EPIS-Informe SAD-DespliegaUML.docx`
+
+### Integración continua
+
+Cada `push` a `main` ejecuta el pipeline de
+[`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml), que:
+
+1. corre la suite de pruebas y **bloquea el despliegue si falla**;
+2. verifica que el modelo de ejemplo cumpla las 19 reglas;
+3. regenera los diagramas y el manual técnico desde el modelo;
+4. renderiza los `.puml` a SVG con PlantUML;
+5. publica la aplicación y la documentación en GitHub Pages.
+
+Los artefactos generados se pueden regenerar en local con:
+
+```bash
+node tools/generar-documentacion.js
+```
 
 ---
 
