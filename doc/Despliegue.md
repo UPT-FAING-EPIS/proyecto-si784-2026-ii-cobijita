@@ -37,8 +37,9 @@ suelto rompería la carga de estilos y módulos.
 ## 3. Estado actual de la publicación
 
 El pipeline se ejecuta correctamente de principio a fin: las tres primeras
-etapas terminan en verde y el artefacto se genera. Sin embargo, **la URL pública
-devuelve 404**, y la causa está fuera del repositorio:
+etapas terminan en verde, el artefacto se genera y el propio pipeline lo
+advierte en el registro. La **URL pública devuelve 404**, y la causa está fuera
+del repositorio:
 
 > El entorno `github-pages` de este repositorio tiene activada la política
 > `custom_branch_policies` (ramas personalizadas) y **no incluye la rama
