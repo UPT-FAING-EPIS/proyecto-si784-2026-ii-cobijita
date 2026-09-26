@@ -175,13 +175,15 @@ node app/tests/casos.js R-17       # sólo las que mencionan R-17
 
 | # | Defecto | Causa raíz | Regla/caso afectado | Estado |
 | :- | :- | :- | :- | :- |
-| D-01 | El nivel de despliegue de los componentes se inflaba: la lógica de negocio aparecía en nivel 3 en vez de 2 | El cálculo iteraba sobre todos los conectores sin guaranteeing que la dependencia ya estuviera resuelta | T-40 (orden por nivel) | Corregido: nivel = 1 + máx(nivel de dependencias), resuelto en orden topológico |
-| D-02 | El plan mostraba la fecha `1970-01-01` | El reloj inyectado para las pruebas (`SEC = 0`) se usaba también en el navegador | — | Corregido: `DPL.ahoraIso()` usa la hora real si `SEC = 0`, y hay caso de prueba que lo verifica |
-| D-03 | La reimportación de un `.puml` propio perdía el nodo de cada realización | Las realizaciones se emitían fuera del bloque `node` y el parser no guardaba el artefacto→nodo | T-34 | Corregido: mapa `artefacto → nodo` durante el análisis de bloques |
-| D-04 | La reimportación invertía las direcciones de los puertos | El parser leía `--` como `required` y `..` como `provided`, al revés de la convención | T-34, T-36 | Corregido: `--` = `provided`, `..` = `required` |
-| D-05 | La reimportación perdía la ruta del artefacto y su versión | El metadato `@file` se escribía pero no se parseaba su primer segmento | T-35 | Corregido: parseo de los metadatos `@meta`, `@spec` y `@file` |
+| D-01 | El nivel de despliegue de los componentes se inflaba: la lógica de negocio aparecía en nivel 3 en vez de 2 | El cálculo iteraba sobre todos los conectores sin garantizar que la dependencia ya estuviera resuelta | T-49 (orden por nivel) | Corregido: nivel = 1 + máx(nivel de dependencias), resuelto en orden topológico |
+| D-02 | El plan mostraba la fecha `1970-01-01` | El reloj inyectado para las pruebas (`SEC = 0`) se usaba también en el navegador | T-57 | Corregido: `DPL.ahoraIso()` usa la hora real si `SEC = 0`, y hay caso de prueba que lo verifica |
+| D-03 | La reimportación de un `.puml` propio perdía el nodo de cada realización | Las realizaciones se emitían fuera del bloque `node` y el parser no guardaba el artefacto→nodo | T-61 | Corregido: mapa `artefacto → nodo` durante el análisis de bloques |
+| D-04 | La reimportación invertía las direcciones de los puertos | El parser leía `--` como `required` y `..` como `provided`, al revés de la convención | T-64 | Corregido: `--` = `provided`, `..` = `required` |
+| D-05 | La reimportación perdía la ruta del artefacto y su versión | El metadato `@file` se escribía pero no se parseaba su primer segmento | T-62 | Corregido: parseo de los metadatos `@meta`, `@spec` y `@file` |
 | D-06 | Los nombres de puerto se solapaban con el estereotipo en el diagrama | La caja del componente era más baja que el espacio ocupado por los puertos | Verificación visual | Corregido: caja de 168×104 px y separación de puertos proporcional al número de puertos |
-| D-07 | El catálogo de reglas se pintaba en la columna lateral, no en el panel principal | El contenedor de texto no existía en el HTML | Verificación visual | Corregido: panel `#panel-texto` propio con rejilla de 3 columnas |
+| D-07 | El catálogo de reglas se pintaba en la columna lateral, no en el panel principal | El contenedor de texto no existía en el HTML | Verificación visual | Corregido: panel `#panel-texto` propio con rejilla de tarjetas |
+| D-08 | El enlace directo `?vista=X` cambiaba de panel pero dejaba la pestaña anterior resaltada | El manejador de las pestañas y el deep-link manipulaban el estado por separado | Verificación visual | Corregido: ambos caminos pasan por `activarPestana()`, única función que actualiza estado y resaltado |
+| D-09 | La vista de despliegue trazaba líneas artefacto→componente que cruzaban el diagrama sin sentido | El componente pertenece a otro diagrama: su coordenada no corresponde a ese lienzo | Verificación visual | Corregido: la relación se muestra como `→ Cn` dentro de la ficha de cada artefacto |
 
 ## 9. Métricas de calidad
 
@@ -189,7 +191,7 @@ node app/tests/casos.js R-17       # sólo las que mencionan R-17
 | :- | :- | :-: |
 | Tasa de éxito de las pruebas | casos exitosos / casos ejecutados | 100 % (64/64) |
 | Cobertura de reglas | reglas con caso positivo y negativo / reglas del catálogo | 100 % (19/19) |
-| Densidad de defectos | defectos detectados / 100 casos ejecutados | 3,1 (2 defectos funcionales sobre los primeros 64 casos) |
+| Densidad de defectos | defectos detectados / 100 casos ejecutados | 14,1 (9 defectos sobre los primeros 64 casos) |
 | Eficacia de detección | casos negativos que disparan su regla / casos negativos planificados | 100 % |
 | Tasa de falsos positivos | modelos válidos con hallazgo de severidad error / modelos válidos evaluados | 0 % |
 | Tiempo de respuesta de la validación | duración de las 19 reglas sobre el modelo de referencia | < 1 ms |
@@ -211,10 +213,11 @@ artefacto no desplegado, ciclo no permitido— sin producir falsos positivos sob
 modelos correctos, y el plan de despliegue generado cubre todos los nodos y
 artefactos del modelo sin referencias pendientes.
 
-Las 64 pruebas automatizadas se ejecutan en ≈20 ms, lo que permite correr la
+Las 64 pruebas automatizadas se ejecutan en ≈25 ms, lo que permite correr la
 suite en cada cambio y no sólo antes de la entrega. La tasa de éxito es del 100 %
-y las siete incidencias detectadas durante el desarrollo (sección 8.1) están
-corregidas y cubiertas por casos de regresión.
+y las nueve incidencias detectadas durante el desarrollo (sección 8.1) están
+corregidas y cubiertas por casos de regresión o por verificación visual
+documentada.
 
 ---
 

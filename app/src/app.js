@@ -632,12 +632,19 @@
 
   document.querySelectorAll('.pest').forEach(function (b) {
     b.addEventListener('click', function () {
-      document.querySelectorAll('.pest').forEach(function (x) { x.classList.remove('activa'); });
-      b.classList.add('activa');
-      estado.vista = b.getAttribute('data-vista');
-      refrescar();
+      activarPestana(b.getAttribute('data-vista'));
     });
   });
+
+  function activarPestana(nombre) {
+    var b = document.querySelector('.pest[data-vista="' + nombre + '"]');
+    if (!b) return false;
+    document.querySelectorAll('.pest').forEach(function (x) { x.classList.remove('activa'); });
+    b.classList.add('activa');
+    estado.vista = nombre;
+    refrescar();
+    return true;
+  }
 
   /* ================================================================
      Acciones de la barra superior
@@ -739,12 +746,6 @@
   /* ================================================================
      Arranque
      ================================================================ */
-  function activarPestana(nombre) {
-    var b = document.querySelector('.pest[data-vista="' + nombre + '"]');
-    if (b) b.click();
-    return !!b;
-  }
-
   (function iniciar() {
     DPL.SEC = 0;   /* en el navegador se usa la hora real */
     var guardado = A.cargar();

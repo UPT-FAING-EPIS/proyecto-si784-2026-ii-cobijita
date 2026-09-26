@@ -196,7 +196,7 @@
       var spec = [n.sistemaOperativo, n.cpu, n.memoria].filter(Boolean).join(' · ');
       if (spec) g.appendChild(el('text', { x: 0, y: est.h / 2 - 8, 'text-anchor': 'middle', 'font-size': 10, fill: '#475569' }, spec));
 
-      /* artefactos realizados */
+      /* artefactos realizados, con el componente que cada uno materializa */
       (ix.artefactosPorNodo[n.id] || []).forEach(function (r, i) {
         var a = ix.artefactos[r.artefacto];
         if (!a) return;
@@ -205,22 +205,12 @@
         var ea2 = ESTILO_ARTEFACTO[a.tipo] || ESTILO_ARTEFACTO.executable;
         g.appendChild(el('text', { x: -est.w / 2 + 14, y: y, 'font-size': 11, fill: '#0f172a' },
           ea2.etiqueta + ' ' + a.id + ' ' + a.nombre + ' v' + a.version));
+        if (a.componente) {
+          g.appendChild(el('text', { x: est.w / 2 - 12, y: y, 'text-anchor': 'end',
+            'font-size': 10, fill: '#7c3aed' }, '→ ' + a.componente));
+        }
       });
       svg.appendChild(g);
-    });
-
-    /* realizaciones: artefacto -> componente */
-    modelo.realizaciones.forEach(function (r) {
-      var n = ix.nodos[r.nodo], a = ix.artefactos[r.artefacto];
-      if (!n || !a || !a.componente) return;
-      var c = ix.componentes[a.componente];
-      if (!c) return;
-      var eN = ESTILO_NODO[n.estereotipo] || ESTILO_NODO.executionEnvironment;
-      var p1 = bordeNodo(eN, { x: n.x, y: n.y }, { x: c.x, y: c.y });
-      svg.appendChild(el('line', {
-        x1: p1.x, y1: p1.y, x2: c.x, y2: c.y,
-        stroke: '#a855f7', 'stroke-width': 1.2, 'stroke-dasharray': '3 4', opacity: 0.8
-      }));
     });
   }
 
