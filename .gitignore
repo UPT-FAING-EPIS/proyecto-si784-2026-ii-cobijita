@@ -36,3 +36,7 @@ node_modules/
 plantuml.jar
 *.jar
 _site/
+
+# CNAME de un despliegue con Surge: GitHub Pages lo interpretaria como
+# dominio personalizado y romperia la publicacion.
+sitio/CNAME
