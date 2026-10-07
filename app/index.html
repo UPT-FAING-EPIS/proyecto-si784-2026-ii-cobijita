@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DespliegaUML · Diagramador de componentes y despliegue de software</title>
 <link rel="stylesheet" href="css/estilos.css">
+<link rel="stylesheet" href="css/bienvenida.css">
 </head>
 <body>
 
@@ -17,6 +18,7 @@
     </div>
   </div>
   <div class="acciones">
+    <span class="modo-activo" id="etiqueta-modo"></span>
     <input id="nombre-proyecto" type="text" value="Aplicación web tres niveles" aria-label="Nombre del proyecto">
     <button id="btn-nuevo" class="sec">Nuevo</button>
     <button id="btn-ejemplo" class="sec">Cargar ejemplo</button>
@@ -34,6 +36,8 @@
   <button class="pest" data-vista="reglas">Reglas de consistencia</button>
   <button class="pest" data-vista="plan">Plan de despliegue</button>
 </nav>
+
+<div id="selector-ejemplos" class="selector-ejemplos" style="display:none; padding: 10px 18px; max-width: 1200px; margin: 0 auto;"></div>
 
 <main>
 
@@ -88,5 +92,7 @@
 <script src="src/puml.js"></script>
 <script src="src/almacen.js"></script>
 <script src="src/app.js"></script>
+<script src="src/ejemplos.js"></script>
+<script src="src/bienvenida.js"></script>
 </body>
 </html>

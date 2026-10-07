@@ -374,15 +374,38 @@
       return;
     }
     var nodoSvg = elementoEn(e);
-    if (nodoSvg && nodoSvg.__centro) {
-      var centro = nodoSvg.__centro;
-      if (estado.herramienta === 'mover') {
-        arrastrando = { centro: true, dx: centro.x - p.x, dy: centro.y - p.y };
-        return;
+    var centro = nodoSvg ? nodoSvg.__centro : null;
+
+    if (!centro) {
+      /* Lienzo vacio: no hay ningun nodo bajo el cursor, pero las
+         herramientas de creacion deben funcionar igual. Se usa la
+         coordenada del clic como punto de insercion. Antes, con un modelo
+         vacio el clic se descartaba en silencio y los botones parecian
+         no responder. */
+      if (estado.herramienta === 'nodo') {
+        aplicarHerramientaDespliegue(p, null);
+      } else if (estado.herramienta === 'componente') {
+        aplicarHerramientaComponente(p, null);
+      } else if (estado.herramienta === 'artefacto') {
+        aplicarHerramientaDespliegue(p, null);
+      } else if (estado.herramienta === 'puerto') {
+        pista('El puerto se agrega sobre un componente: primero crea el componente.');
+      } else if (estado.herramienta === 'conector') {
+        pista('El conector une dos componentes existentes: primero crea ambos.');
+      } else if (estado.herramienta === 'camino') {
+        pista('El camino se dibuja entre dos puntos ya existentes.');
+      } else if (estado.herramienta) {
+        pista('Selecciona un elemento existente o elige otra herramienta.');
       }
-      if (estado.vista === 'componentes') aplicarHerramientaComponente(centro, nodoSvg.__nodo);
-      else aplicarHerramientaDespliegue(centro, nodoSvg.__nodo);
+      return;
     }
+
+    if (estado.herramienta === 'mover') {
+      arrastrando = { centro: true, dx: centro.x - p.x, dy: centro.y - p.y };
+      return;
+    }
+    if (estado.vista === 'componentes') aplicarHerramientaComponente(centro, nodoSvg.__nodo);
+    else aplicarHerramientaDespliegue(centro, nodoSvg.__nodo);
   });
 
   svg.addEventListener('mousemove', function (e) {
@@ -409,6 +432,7 @@
       estado.seleccion = { tipo: 'componente', id: c.id };
       estado.herramienta = null;
       avisar('Componente ' + c.id + ' creado. Edítalo en el inspector.', 'bien');
+      refrescar();
     } else if (estado.herramienta === 'puerto') {
       var id = nodoSvg && nodoSvg.parentNode && nodoSvg.parentNode.querySelector('text');
       var comp = elementoComponenteDesdeSvg(nodoSvg);
@@ -449,11 +473,13 @@
       estado.seleccion = { tipo: 'nodo', id: n.id };
       estado.herramienta = null;
       avisar('Nodo ' + n.id + ' creado. Completa SO/CPU/memoria en el inspector.', 'bien');
+      refrescar();
     } else if (estado.herramienta === 'artefacto') {
       var a = M.agregarArtefacto(estado.modelo, { nombre: 'artefacto.bin', tipo: 'executable', x: p.x, y: p.y });
       estado.seleccion = { tipo: 'artefacto', id: a.id };
       estado.herramienta = null;
       avisar('Artefacto ' + a.id + ' creado. Asígnalo a un componente y a un nodo.', 'bien');
+      refrescar();
     } else if (estado.herramienta === 'realizacion') {
       var nodo = elementoNodoDesdeSvg(nodoSvg);
       if (!nodo) return;
@@ -741,7 +767,59 @@
     A.descargar('plan-de-despliegue-' + DPL.almacen.nombreLimpio(estado.modelo.nombre) + '.md',
       $('#salida-plan').textContent, 'text/markdown');
     avisar('Plan descargado.', 'bien');
-  });
+  
+
+/* ============================================================
+   Integración con la bienvenida y los modos
+   ============================================================ */
+window.__app = {
+  nuevoModelo: function (nombre) {
+    estado.modelo = M.nuevo();
+    if (nombre) estado.modelo.nombre = nombre;
+    estado.seleccion = null;
+    estado.pendiente = null;
+    refrescar();
+  },
+  modelo: function () { return estado.modelo; },
+  refrescar: refrescar,
+  avisar: avisar,
+  alCambiarModo: function (modo) {
+    /* Cambiar las etiquetas de la barra de herramientas y las pestañas */
+    var etq = window.DespliegaModos.etiqueta;
+    var mapa = {
+      'data-herr="componente"': etq('agregar-componente'),
+      'data-herr="puerto"': etq('agregar-puerto'),
+      'data-herr="conector"': etq('agregar-conector'),
+      'data-herr="nodo"': etq('agregar-nodo'),
+      'data-herr="artefacto"': etq('agregar-artefacto'),
+      'data-herr="realizacion"': etq('agregar-realizacion'),
+      'data-herr="camino"': etq('agregar-camino')
+    };
+    Object.keys(mapa).forEach(function (sel) {
+      var btn = document.querySelector('#herramientas ' + sel);
+      if (btn) btn.textContent = mapa[sel];
+    });
+    /* pestañas */
+    var pestanas = document.querySelectorAll('.pest');
+    if (pestanas.length >= 4) {
+      pestanas[0].textContent = etq('vista-componentes');
+      pestanas[1].textContent = etq('vista-despliegue');
+      pestanas[2].textContent = etq('vista-reglas');
+      pestanas[3].textContent = etq('vista-plan');
+    }
+    refrescar();
+  }
+};
+
+/* Exponer API antes de cualquier bienvenida */
+window.__app = window.__app || {};
+
+/* Mostrar la bienvenida al cargar */
+if (window.DespliegaModos && window.DespliegaModos.mostrarBienvenida) {
+  window.DespliegaModos.mostrarBienvenida();
+}
+
+});
 
   /* ================================================================
      Arranque

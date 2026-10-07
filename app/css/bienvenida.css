@@ -1,0 +1,101 @@
+/* ============================================================
+   DespliegaUML · pantalla de bienvenida, modos y ejemplos
+   ============================================================ */
+
+/* ---------- Pantalla de bienvenida ---------- */
+.bienvenida {
+  position: fixed; inset: 0; z-index: 100;
+  background: linear-gradient(160deg, #0f766e 0%, #115e59 55%, #134e4a 100%);
+  display: grid; place-items: center; padding: 24px;
+  overflow-y: auto;
+}
+.bienvenida.oculta { display: none; }
+.bienvenida-caja {
+  background: #fff; border-radius: 16px; max-width: 720px; width: 100%;
+  padding: 34px 36px; box-shadow: 0 24px 60px rgba(0,0,0,.28);
+}
+.bienvenida-caja h2 { margin: 0 0 6px; font-size: 26px; color: #0f766e; }
+.bienvenida-caja .sub { margin: 0 0 22px; color: #64748b; font-size: 14px; }
+
+.pasos { display: grid; gap: 10px; margin-bottom: 24px; }
+.paso {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+  padding: 12px 14px;
+}
+.paso-num {
+  flex: none; width: 26px; height: 26px; border-radius: 50%;
+  background: #0f766e; color: #fff; font-weight: 700; font-size: 13px;
+  display: grid; place-items: center;
+}
+.paso-txt strong { display: block; margin-bottom: 2px; }
+.paso-txt span { font-size: 13px; color: #64748b; }
+
+.modos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.modo {
+  border: 2px solid #e2e8f0; border-radius: 12px; padding: 16px;
+  cursor: pointer; text-align: left; background: #fff; font: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+.modo:hover { border-color: #0f766e; box-shadow: 0 4px 14px rgba(15,118,110,.15); }
+.modo.recomendado { border-color: #0f766e; background: #f0fdfa; }
+.modo strong { display: block; font-size: 16px; margin-bottom: 4px; }
+.modo span { font-size: 13px; color: #64748b; line-height: 1.5; }
+.modo .etiq {
+  display: inline-block; font-size: 11px; font-weight: 700; color: #0f766e;
+  background: #ccfbf1; border-radius: 20px; padding: 2px 9px; margin-bottom: 8px;
+}
+
+.bienvenida-acciones { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.bienvenida-acciones .omitir {
+  background: none; border: none; color: #64748b; text-decoration: underline;
+  font-size: 13px; padding: 7px 4px;
+}
+.bienvenida-acciones .omitir:hover { color: #0f766e; background: none; }
+
+/* ---------- Selector de ejemplo (modo simple) ---------- */
+.selector-ejemplo {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px; margin-bottom: 14px;
+}
+.ejemplo-tarjeta {
+  border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;
+  cursor: pointer; background: #fff; font: inherit; text-align: left;
+  transition: border-color .15s, box-shadow .15s;
+}
+.ejemplo-tarjeta:hover { border-color: #0f766e; box-shadow: 0 3px 10px rgba(15,118,110,.12); }
+.ejemplo-tarjeta strong { display: block; font-size: 14px; margin-bottom: 3px; }
+.ejemplo-tarjeta span { font-size: 12px; color: #64748b; line-height: 1.45; display: block; }
+
+/* ---------- Etiqueta de modo activo ---------- */
+.modo-activo {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: #0f766e;
+  background: #ccfbf1; border-radius: 20px; padding: 3px 11px;
+}
+.modo-activo button {
+  border: none; background: none; color: #0f766e; font-size: 14px;
+  padding: 0 2px; line-height: 1;
+}
+
+/* ---------- Avisos ---------- */
+#avisos {
+  position: fixed; right: 16px; bottom: 16px; z-index: 90;
+  display: grid; gap: 8px; max-width: 340px;
+}
+.aviso {
+  background: #0f172a; color: #e2e8f0; border-radius: 10px;
+  padding: 11px 14px; font-size: 13px; box-shadow: 0 8px 22px rgba(0,0,0,.25);
+  animation: entrar .22s ease-out;
+}
+.aviso.bien { background: #065f46; }
+.aviso.mal  { background: #991b1b; }
+@keyframes entrar {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (max-width: 640px) {
+  .modos { grid-template-columns: 1fr; }
+  .bienvenida-caja { padding: 24px 20px; }
+}
